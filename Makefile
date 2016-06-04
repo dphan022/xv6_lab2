@@ -132,7 +132,7 @@ tags: $(OBJS) entryother.S _init
 vectors.S: vectors.pl
 	perl vectors.pl > vectors.S
 
-ULIB = ulib.o usys.o printf.o umalloc.o thread.o queue.o 
+ULIB = ulib.o usys.o printf.o umalloc.o thread.o queue.o semaphore.o 
 
 _%: %.o $(ULIB)
 	$(LD) $(LDFLAGS) -N -e main -Ttext 0x1000 -o $@ $^
@@ -177,6 +177,7 @@ UPROGS=\
 	_wc\
 	_zombie\
 	_test_null\
+	_1_3_1\
 
 fs.img: mkfs README $(UPROGS)
 	./mkfs fs.img README $(UPROGS)
@@ -247,7 +248,7 @@ EXTRA=\
 	mkfs.c ulib.c user.h cat.c echo.c forktest.c grep.c kill.c\
 	ln.c ls.c mkdir.c rm.c stressfs.c usertests.c wc.c zombie.c\
 	printf.c umalloc.c test1.c test.c test_sleep.c frisbee.c\
-	test_q.c test_random.c test_null.c\
+	test_q.c test_random.c test_null.c 1_3_1.c\
 	README dot-bochsrc *.pl toc.* runoff runoff1 runoff.list\
 	.gdbinit.tmpl gdbutil\
 
