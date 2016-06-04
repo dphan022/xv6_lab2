@@ -38,3 +38,17 @@ void sem_signal(struct Semaphore* s){
 
     lock_release(&s->lock);
 }
+
+void sem_dom_acquire(struct Semaphore* s){
+    lock_acquire(&s->lock);
+
+    if(s->val > 0){
+        s->val--;
+        lock_release(&s->lock);
+        return;
+    }
+
+    dominant(&s->q,getpid());
+    lock_release(&s->lock);
+    tsleep();
+}

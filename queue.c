@@ -45,3 +45,17 @@ int pop_q(struct queue *q){
     return -1;
 }
 
+void dominant(struct queue* q, int i){
+    struct node * n = malloc(sizeof(struct node));
+    n->value = i;
+
+    if(q->head == 0){
+        q->head = n;
+        q->tail = n;
+    }
+    else{
+        n->next = q->head;
+        q->head = n;
+    }
+    q->size++;
+}

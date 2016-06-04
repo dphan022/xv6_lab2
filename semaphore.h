@@ -10,3 +10,4 @@ struct Semaphore {
 void sem_init(struct Semaphore*, int);
 void sem_acquire(struct Semaphore*);
 void sem_signal(struct Semaphore*);
+void sem_dom_acquire(struct Semaphore*);
