@@ -178,6 +178,8 @@ UPROGS=\
 	_zombie\
 	_MonkeySem\
 	_test_null\
+	_1_3_1\
+	_MissNCan\
 
 fs.img: mkfs README $(UPROGS)
 	./mkfs fs.img README $(UPROGS)
@@ -248,7 +250,7 @@ EXTRA=\
 	mkfs.c ulib.c user.h cat.c echo.c forktest.c grep.c kill.c\
 	ln.c ls.c mkdir.c rm.c stressfs.c usertests.c wc.c zombie.c\
 	printf.c umalloc.c test1.c test.c test_sleep.c frisbee.c\
-	test_q.c test_random.c test_null.c MonkeySem.c\
+	test_q.c test_random.c test_null.c 1_3_1.c MonkeySem.c MissNCan.c\
 	README dot-bochsrc *.pl toc.* runoff runoff1 runoff.list\
 	.gdbinit.tmpl gdbutil\
 
