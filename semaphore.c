@@ -1,5 +1,5 @@
-#include "user.h"
 #include "semaphore.h"
+#include "user.h"
 
 // Initializes the semaphore
 void sem_init(struct Semaphore* s, int value){
@@ -27,9 +27,9 @@ void sem_acquire(struct Semaphore* s){
 
 // Increments the semaphore
 void sem_signal(struct Semaphore* s){
-    lock_acquire(&->lock);
+    lock_acquire(&s->lock);
 
-    if(!empty_q(&->q)){
+    if(!empty_q(&s->q)){
         twakeup(pop_q(&s->q));
     }
     else{

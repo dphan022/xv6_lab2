@@ -1,5 +1,5 @@
-#include "queue.h"
 #include "types.h"
+#include "queue.h"
 
 struct Semaphore {
     int val;
@@ -9,4 +9,4 @@ struct Semaphore {
 
 void sem_init(struct Semaphore*, int);
 void sem_acquire(struct Semaphore*);
-void sem_sginal(struct Semaphore*);
+void sem_signal(struct Semaphore*);
