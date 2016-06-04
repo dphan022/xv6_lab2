@@ -1,7 +1,7 @@
 #include "semaphore.h"
 #include "user.h"
 
-#define NUM 21
+#define NUM 12
 
 Semaphore H, O, mutex;
 int numWater;
@@ -41,7 +41,7 @@ int main(int argc, char* argv[]){
         }
     }
 
-    while(wait() > 0);
+    while(wait() >=  0)
     printf(1, "water : %d\n", numWater);
 
     exit();
