@@ -1,81 +1,100 @@
-#include "semaphore.h"
+#include "types.h"
 #include "user.h"
+#include "semaphore.h"
+#define NUM_MONKEYS 40
 
-void MonkeyRdy(void * arg_ptr);
-void Dom_Monkey_Rdy(void * arg_ptr);
+void MonkeyArrives(void* arg);
+void DominantArrives(void* arg);
 
-struct Semaphore Monkey_Go_Up;
+void regClimb() { printf(1, "\nRegular Monkey climbing.\n"); }
+void domClimb() { printf(1, "\nDominant monkey climbing.\n"); }
 
-struct mutex{
-	lock_t lock;
-} mutex;
+Semaphore tree, mutex, mutex2, monkey, one_monkey, dom_monkey;
 
-int count = 0;
+int cnt_climbed, monkeys, dom_monkeys;
 
-int main(){
-	sem_init(&Monkey_Go_Up, 3);
-	lock_init(&mutex.lock);
+int main()  {
 
-	printf(1, "Monkey Test: 1 dominant monkey and 4 monkeys...\n");
-	void * thread1 = thread_create(MonkeyRdy, (void *) 0);
-	if(thread1 == 0){
-		printf(1,  "thread_create failed...\n");
-		exit();
-	}
+    cnt_climbed = monkeys = dom_monkeys = 0;
 
-	void * thread2 = thread_create(MonkeyRdy, (void *) 0);
-	if(thread2 == 0){
-		printf(1,  "thread_create failed...\n");
-		exit();
-	}
+    sem_init(&one_monkey, 1);
+    sem_init(&monkey, 1);
+    sem_init(&dom_monkey, 1);
+    sem_init(&tree, 3);
+    sem_init(&mutex, 1);
+    sem_init(&mutex2, 1);
 
-	void * thread3 = thread_create(MonkeyRdy, (void *) 0);
-	if(thread3 == 0){
-		printf(1,  "thread_create failed...\n");
-		exit();
-	}
 
-	void * thread4 = thread_create(Dom_Monkey_Rdy, (void *) 0);
-	if(thread4 == 0){
-		printf(1,  "thread_create failed...\n");
-		exit();
-	}
+    void* tid;
+    printf(1, "Randomly generated %d monkeys\n", NUM_MONKEYS);
+    int i;
+    for (i = 1; i < NUM_MONKEYS+1; i++) {
+        if ((random(99999*i)/101)%10) {
+            tid = thread_create(MonkeyArrives, (void*)0);
+            if(tid == 0){
+                printf(1,  "thread_create failed\n");
+                exit();                            
+            }
+        }
+        else {
+            tid = thread_create(DominantArrives, (void*)0);
+            if(tid == 0) {
+                printf(1,  "thread_create failed\n");
+                exit();
+            }
+        }
+    }
 
-	void * thread5 = thread_create(MonkeyRdy, (void *) 0);
-	if(thread5 == 0){
-		printf(1,  "thread_create failed...\n");
-		exit();
-	}
-
-	while(wait() > 0);
-	printf(1, "Monkey climbed tree = %d\n", count);
-
-	exit();
-	return 0;
-
+    while(wait()>0);
+    printf(1, "%d monkeys climbed tree!\n", cnt_climbed);
+    exit();
 }
 
-void MonkeyRdy(void * arg_ptr){
-
-	sem_acquire(&Monkey_Go_Up);
-	lock_acquire(&mutex.lock);
-	printf(1, "Monkey climbs up tree and grabbed a coconut.\n");
-	count++;
-	lock_release(&mutex.lock);
-	sem_signal(&Monkey_Go_Up);
-	texit();
-
+void MonkeyArrives(void *arg){   
+    sem_acquire(&one_monkey);
+    sem_acquire(&monkey);
+    sem_acquire(&mutex);
+    monkeys++;
+    if (monkeys == 1) {
+        sem_acquire(&dom_monkey);
+    }
+    sem_signal(&mutex);
+    sem_signal(&monkey);
+    sem_signal(&one_monkey);
+    sem_acquire(&tree);
+    regClimb();
+    sem_signal(&tree);
+    sem_acquire(&mutex);
+    monkeys--;
+    cnt_climbed++;
+    if (monkeys == 0) {
+        sem_signal(&dom_monkey);
+    }
+    sem_signal(&mutex);
+    
+    texit();
 }
 
-void Dom_Monkey_Rdy(void * arg_ptr){
+void DominantArrives(void *arg){   
+    sem_acquire(&mutex2);
+    dom_monkeys++;
+    if (dom_monkeys == 1) {
+        sem_acquire(&monkey);
+    }
+    sem_signal(&mutex2);
+    sem_acquire(&dom_monkey);
+    sem_acquire(&tree);
+    domClimb();
+    sem_signal(&tree);
+    sem_signal(&dom_monkey);
+    sem_acquire(&mutex2);
+    cnt_climbed++;
+    dom_monkeys--;
+    if (dom_monkeys == 0) {
+        printf(1, "dominant done\n");
+        sem_signal(&monkey);
+    }
+    sem_signal(&mutex2);
 
-	lock_acquire(&mutex.lock);
-	printf(1, "Dominant monkey have climbed the tree and grabbed a coconut.\n");
-	lock_release(&mutex.lock);
-	sem_dom_acquire(&Monkey_Go_Up);
-	lock_acquire(&mutex.lock);
-	count++;
-	lock_release(&mutex.lock);
-	sem_signal(&Monkey_Go_Up);
-	texit();
+    texit();
 }
