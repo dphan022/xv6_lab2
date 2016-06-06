@@ -24,9 +24,7 @@ int main()  {
     sem_init(&mutex, 1);
     sem_init(&mutex2, 1);
 
-
     void* tid;
-    printf(1, "Randomly generated %d monkeys\n", NUM_MONKEYS);
     int i;
     for (i = 1; i < NUM_MONKEYS+1; i++) {
         if ((random(99999*i)/101)%10) {
@@ -45,8 +43,9 @@ int main()  {
         }
     }
 
-    while(wait()>0);
-    printf(1, "%d monkeys climbed tree!\n", cnt_climbed);
+    while(wait() >= 0);
+
+    printf(1, "%d monkeys climbed tree\n", cnt_climbed);
     exit();
 }
 
@@ -91,7 +90,7 @@ void DominantArrives(void *arg){
     cnt_climbed++;
     dom_monkeys--;
     if (dom_monkeys == 0) {
-        printf(1, "dominant done\n");
+        printf(1, "Dominant monkey is done.\n");
         sem_signal(&monkey);
     }
     sem_signal(&mutex2);
